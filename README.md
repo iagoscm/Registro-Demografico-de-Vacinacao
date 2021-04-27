@@ -22,17 +22,16 @@ O programa deverá mostrar o menu de opções apresentado abaixo:
 Cada item de menu deverá ser realizado por um procedimento específico.
 
 Itens que devem ser observados na construção do programa:
-  a) gravar e recuperar os dados em arquivo;
-  b) permitir a consulta da pessoa por nome ou parte do nome, ignorando maiúsculas/minúsculas;
-  c) permitir a exclusão de uma pessoa (excluindo todas as informações associadas a ela);
-  d) não permitir o cadastramento de pessoas com dados inválidos, bem como não deve permitir registrar uma 
-  pessoa em um Estado e Cidade que não estiverem cadastrados;
-  e) gerar relatório demográfico conforme o modelo mostrado ao final deste documento;
-  f) conter comentários ao longo do código, facilitando o entendimento de suas partes;
-  g) respeitar as regras de endentação adotadas na disciplina;
-  h) usar nomes de variáveis significativos;
-  i) fazer uso adequado das estruturas de programação estudadas: struct, #define, etc.;
-  j) uso correto das estruturas condicionais e de repetição e na declaração e chamada de funções/procedimentos;
+  1) gravar e recuperar os dados em arquivo;
+  2) permitir a consulta da pessoa por nome ou parte do nome, ignorando maiúsculas/minúsculas;
+  3) permitir a exclusão de uma pessoa (excluindo todas as informações associadas a ela);
+  4) não permitir o cadastramento de pessoas com dados inválidos, bem como não deve permitir registrar uma pessoa em um Estado e Cidade que não estiverem cadastrados;
+  5) gerar relatório demográfico conforme o modelo mostrado ao final deste documento;
+  6) conter comentários ao longo do código, facilitando o entendimento de suas partes;
+  7) respeitar as regras de endentação adotadas na disciplina;
+  8) usar nomes de variáveis significativos;
+  9) fazer uso adequado das estruturas de programação estudadas: struct, #define, etc.;
+  10) uso correto das estruturas condicionais e de repetição e na declaração e chamada de funções/procedimentos;
 
 A entrega e apresentação do trabalho deverá ser feita até a data indicada no Plano de Ensino e deverá passar por
 avaliação do professor e dos monitores nas datas que também constam no Plano de Ensino.
