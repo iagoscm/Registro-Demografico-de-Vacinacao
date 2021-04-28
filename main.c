@@ -5,6 +5,9 @@
 #define NOME_MAX 1000
 #define CIDADE_MAX 40
 
+// funcoes listaestado e listacidade ainda estao muito abrangentes, verificar casos aonde o estado ou cidade desejado possuem letras que podem aparecer em
+//outras partes da struct e procurar resolver
+
 typedef struct // struct que armazena as informações de uma pessoa
 {
     char nome[NOME_MAX];
@@ -327,7 +330,7 @@ int verificacidade(PESSOA habitante) // funcao que verifica se a cidade esta reg
     {
         do
         {
-            fscanf(cidades_registradas_txt,"%s", cidades_registradas);// transferindo o texto do txt para uma string
+            fgets(cidades_registradas, 1500, cidades_registradas_txt);
             if(strstr(cidades_registradas, habitante.cidade)) // buffer para verificar se a cidade esta registrada)
             {
                 procura_cidade_registrada++;                 // contador para verificar quantas vezes a cidade aparece
@@ -371,7 +374,7 @@ int verificaUF(PESSOA habitante)    // funcao que verifica se a UF esta registra
         if(strlen(habitante.UF) == 2){
             do
             {
-                fscanf(uf,"%s", uftxt);
+                fscanf(uf,"%s",uftxt);
                 if(strstr(uftxt, habitante.UF))
                 {
                     procurastring++;// se a UF aparece, o contador eh somado
@@ -569,7 +572,7 @@ void registracidade() // procedimento que registra as cidades no arquivo
     CIDADE cidadenova;
     int contadorcidade = 0, tamanho_cidade, contadorUF = 0, tamanho_UF, procura_cidade_registrada = 0;
     int procuraUF_registrada = 0;
-    char UFs_registradas[100], cidades_registradas[500];
+    char UFs_registradas[100], cidades_registradas[500], nome_formatado[550];
 
     cidades_registradas_txt = fopen("cidades registradas.txt", "a+b");  // abrindo o arquivo das cidades já registradas
     UFs_registradas_txt = fopen("UFregistrada.txt", "a+b");
@@ -593,6 +596,11 @@ void registracidade() // procedimento que registra as cidades no arquivo
             contadorcidade++;// conta quantas letras tem na string
         }
     }
+
+    strcpy(nome_formatado, cidadenova.cidade);
+    strcat(nome_formatado, "-");
+    strcat(nome_formatado, cidadenova.UF);// buffer para verificacao de uf caso cidade seja igual
+    strcat(nome_formatado, "\n");
 
     for(int k = 0; k < 2; k++)
     {
@@ -620,16 +628,20 @@ void registracidade() // procedimento que registra as cidades no arquivo
                     }while(!feof(UFs_registradas_txt));
                     if(procuraUF_registrada != 0) // verifica se a UF esta registrada
                     {
-                        int procuraUF_igual = 0;
+                        int procuraUF_igual = 0;// contador para saber quantas vezes a UF aparece
+                        char nome_cidade[500], nome_UF[4];  // buffers para verificar a cidade e a UF
                         do
                         {
-                            fscanf(cidades_registradas_txt,"%s", cidades_registradas);// transferindo o texto do txt para uma string
-                            if(strstr(cidades_registradas, cidadenova.cidade)) // buffer para verificar se a cidade esta registrada
+                            fgets(cidades_registradas, 1500, cidades_registradas_txt);
+                            if(strstr(cidades_registradas, cidadenova.cidade)) // buffer para verificar se a cidade esta incluida na string
                             {
                                 procura_cidade_registrada++;
-                                if(strstr(cidades_registradas, cidadenova.UF))// se a cidade for igual, também verifico se a uf é igual
+                                if(strstr(cidades_registradas, cidadenova.UF))// se a cidade for incluida, também verifico se a uf esta incluida
                                 {
-                                    procuraUF_igual++;
+                                    if(strcmp(nome_formatado, cidades_registradas) == 0)// se a uf estiver incluida, verifico se a string eh exatamente igual
+                                    {
+                                        procuraUF_igual++;
+                                    }
                                 }
                             }
                         }while(!feof(cidades_registradas_txt));
@@ -649,7 +661,9 @@ void registracidade() // procedimento que registra as cidades no arquivo
                                 printf("\nCidade armazenada com sucesso :)\n\n");
                                 system("pause");
                                 system("cls");
-                            }else{
+                            }
+                            else
+                            {
                                 printf("\nA cidade ja esta registrada com essa UF.\n\n");
                                 system("pause");
                                 system("cls");
@@ -758,7 +772,7 @@ void listaestado()
             if(procuraUF_registrada != 0) // verifica se a UF digitada foi encontrada no txt de estados registrados
             {
                 printf("Seguem as pessoas registradas neste estado:\n\n");
-                char pessoas_registradas[100];// buffer pra 
+                char pessoas_registradas[100];// buffer pra
                 int pessoas = 0;// caso nao tenha nenhuma pessoa, continuara zero
                 while(!feof(pessoas_txt))
                 {
