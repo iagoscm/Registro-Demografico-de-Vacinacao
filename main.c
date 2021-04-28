@@ -10,8 +10,8 @@
 #define UF_MAX 500
 #define LOCAL_MAX 60
 
-// funcoes listaestado e listacidade ainda estao muito abrangentes, verificar casos aonde o estado ou cidade desejado possuem letras que podem aparecer em
-//outras partes da struct e procurar resolver
+//funcoes excluirpessoa e consultapessoa estao encontrando muitos erros na hora de dividir o nome, tentar usar strtok para resolver
+//verificar se consultaestado e consulta cidade nao estao possuindo os mesmos erros
 
 typedef struct // struct que armazena as informações de uma pessoa
 {
@@ -37,6 +37,7 @@ void registrapessoa(PESSOA habitante);
 void listaestado();
 void listacidade();
 void consultapessoa();
+void excluipessoa();
 void relatoriofinal();
 int verificadata(PESSOA habitante);
 int verificacidade(PESSOA habitante);
@@ -177,8 +178,7 @@ int main()
 
         if(opcoes == 7)
         {
-            printf("Digite o nome ou sobrenome da Pessoa\nque deseja excluir: ");
-            //scanf("%s", pessoa);
+            excluipessoa();
         }
 
         if(opcoes == 8)
@@ -1068,6 +1068,7 @@ void consultapessoa()
         while(fgets(lista_pessoas,NOME_MAX,pessoas_txt))
         {
             j = 0;
+            nome_pessoa[0] = '\0';
             do
             {
                 nome_pessoa[j] = lista_pessoas[j];
@@ -1095,7 +1096,7 @@ void consultapessoa()
                 if(strstr(lista_pessoas, pessoa_desejada))
                 {
                     k = 0;
-                    printf("%d-", i);
+                    printf("%d-", i);// listando as pessoas de maneira ordenada para futura escolha
                     do
                     {
                         printf("%c", lista_pessoas[k]);
@@ -1148,6 +1149,134 @@ void consultapessoa()
     fclose(pessoas_txt);
 }
 
+//---------Exclui Pessoa---------------------------------------------------------------------------------------
+void excluipessoa()
+{
+    FILE *original, *alterado;
+    char pessoa_desejada[NOME_MAX];// nome da pessoa que deseja excluir
+    char lista_pessoas[PESSOA_MAX];// buffer para armazenar os dados das pessoas para verificacao
+    int j = 0, i = 1, contador = 0, k = 0, numero;// contadores para verificacoes futuras
+    char nome_pessoa[NOME_MAX];// buffer para armazenar o nome de cada pessoa
+    char infopessoa[PESSOA_MAX];// buffer para armazenar as infos da pessoa caso so exista uma com o nome digitado
+
+    original = fopen("pessoas.txt", "r+b");// abrindo o arquivo existente com as pessoas
+    alterado = fopen("alterado.txt", "w+b");// criando um arquivo novo de saída
+
+    nome_pessoa[0] = '\0';
+
+    if(original)
+    {
+        if(alterado)
+        {
+            printf("Digite o nome ou sobrenome da pessoa que deseja excluir: ");
+            fflush(stdin);
+            scanf("%[^\n]s", pessoa_desejada);
+            strupr(pessoa_desejada);
+            while(fgets(lista_pessoas,PESSOA_MAX,original))
+            {
+                j = 0;
+                nome_pessoa[0] = '\0';
+                do
+                {
+                    nome_pessoa[j] = lista_pessoas[j];
+                    j++;
+                }
+                while(lista_pessoas[j]!=',');
+                if(strstr(nome_pessoa, pessoa_desejada))
+                {
+                    contador++; // contador para ver quantas vezes o nome aparece
+                    strcpy(infopessoa, lista_pessoas); // copio para outra string para depois apresentar o nome se so entrar uma vez nessa condicao
+                }
+            }
+            if(contador == 0)// caso nao entre nenhuma vez na condicao
+            {
+                printf("\nNao foi possivel encontrar esta pessoa\nVerifique a escrita e tente novamente.\n\n");
+                system("pause");
+                system("cls");
+            }
+            else if(contador > 1)// caso entre mais de uma vez(nomes repetidos)
+            {
+                printf("Foram encontradas mais de uma pessoa:\n\n");
+                fseek(original, 0, SEEK_SET);
+                while(fgets(lista_pessoas,PESSOA_MAX,original))
+                {
+                    j = 0;
+                    nome_pessoa[0] = '\0';
+                    while(lista_pessoas[j]!=',')
+                    {
+                        nome_pessoa[j] = lista_pessoas[j];
+                        j++;
+                    }
+                    if(strstr(nome_pessoa, pessoa_desejada))
+                    {
+                        k = 0;
+                        printf("%d-", i);// listando as pessoas de maneira ordenada para futura escolha
+                        do
+                        {
+                            printf("%c", lista_pessoas[k]);
+                            k++;
+                        }
+                        while(lista_pessoas[k]!=',');
+                        printf("\n");
+                        i++;
+                    }
+                }
+                do
+                {
+                    printf("\nDigite o numero da pessoa que deseja obter os dados: ");
+                    fflush(stdin);
+                    scanf("%d", &numero);
+                }while(numero < 1 || numero > i-1);
+                i = 1;
+                fseek(original, 0, SEEK_SET);
+                while(fgets(lista_pessoas,NOME_MAX,original))
+                {
+                    printf("%s", lista_pessoas);
+                    k = 0;
+                    nome_pessoa[0] = '\0';
+                    do
+                    {
+                        nome_pessoa[k] = lista_pessoas[k];
+                        k++;
+                    }while(lista_pessoas[k]!=',');
+                    printf("%s\n\n", nome_pessoa);
+                    if(strstr(nome_pessoa, pessoa_desejada))
+                    {
+                        if(i != numero)
+                        {
+                            fseek(alterado,0,SEEK_END);
+                            fprintf(alterado,"%s", lista_pessoas);
+                        }
+                        else
+                        {
+                            printf("\nDados de %s excluidos com sucesso :)\n\n", nome_pessoa);
+                        }
+                        i++;
+                    }
+                    else
+                    {
+                        fseek(alterado,0,SEEK_END);
+                        fprintf(alterado,"%s",lista_pessoas);
+                    }
+                }
+            }
+        }
+        else
+        {
+        printf("Nao foi possivel criar o arquivo novo de pessoas :(\n");
+        system("pause");
+        system("cls");
+        }
+    }
+    else
+    {
+        printf("Nao foi possivel abrir o arquivo de pessoas.\n");
+        printf("Verifique se voce ja cadastrou alguem.\n\n");
+        system("pause");
+        system("cls");
+    }
+
+}
 //---------Menu------------------------------------------------------------------------------------------------
 char menu() // funcao que retorna o menu para a funcao principal
 {
