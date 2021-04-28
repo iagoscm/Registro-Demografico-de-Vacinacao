@@ -2,8 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <ctype.h>
 #define NOME_MAX 1000
-#define CIDADE_MAX 40
+#define CIDADE_MAX 50
+#define PESSOA_MAX 1100
+#define DATA_MAX 11
+#define UF_MAX 500
+#define LOCAL_MAX 60
 
 // funcoes listaestado e listacidade ainda estao muito abrangentes, verificar casos aonde o estado ou cidade desejado possuem letras que podem aparecer em
 //outras partes da struct e procurar resolver
@@ -12,7 +17,7 @@ typedef struct // struct que armazena as informações de uma pessoa
 {
     char nome[NOME_MAX];
     char sexo[2];
-    char data[11];
+    char data[DATA_MAX];
     char cidade[CIDADE_MAX];
     char UF[3];
     int idade;
@@ -202,8 +207,9 @@ int calculaidade(int anoi, PESSOA habitante) // funcao que calcula a idade do ha
     int idade = 0;
 
     if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0) &&
-       (habitante.data[0] == '2') && (habitante.data[1] == '9')) // calcula a idade de um individuo caso
-    {                                                            //tenha nascido dia 29 de fevereiro
+            (habitante.data[0] == '2') && (habitante.data[1] == '9')) // calcula a idade de um individuo caso
+    {
+        //tenha nascido dia 29 de fevereiro
         for(i = anoi; i < 2021; i++)
         {
             if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0))
@@ -226,7 +232,7 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
 {
 
     int i, p, anoi, k;
-    char data[11], ano[5];
+    char data[DATA_MAX], ano[5];
 
     p = 0;
 
@@ -247,10 +253,11 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
 
     // a partir daqui são verificacoes para saber se a data eh valida
 
-    if(anoi > 2021 || anoi < 1890)
+    if(strlen(data) < 10)
     {
-        return 2;// retorna 2 caso o ano seja do futuro ou mais antigo que a pessoa mais velha que ja viveu
+        return 1;
     }
+
     else
     {
         if((data[3] == '0' && data[4] == '1') || (data[3] == '0' && data[4] == '3') ||
@@ -264,6 +271,10 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
             {
                 if(data[2] == '/' && data[5] == '/')
                 {
+                    if(anoi > 2021 || anoi < 1890)
+                    {
+                        return 2;// retorna 2 caso o ano seja do futuro ou mais antigo que a pessoa mais velha que ja viveu
+                    }
                     return 0;// retorna 0 caso nao tenha erro
                 }
             }
@@ -278,6 +289,10 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
             {
                 if(data[2] == '/' && data[5] == '/')
                 {
+                    if(anoi > 2021 || anoi < 1890)
+                    {
+                        return 2;
+                    }
                     return 0;
                 }
             }
@@ -291,6 +306,10 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
             {
                 if(data[2] == '/' && data[5] == '/')
                 {
+                    if(anoi > 2021 || anoi < 1890)
+                    {
+                        return 2;// retorna 2 caso o ano seja do futuro ou mais antigo que a pessoa mais velha que ja viveu
+                    }
                     return 0;
                 }
             }
@@ -302,6 +321,10 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
                 {
                     if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0))
                     {
+                        if(anoi > 2021 || anoi < 1890)
+                        {
+                            return 2;// retorna 2 caso o ano seja do futuro ou mais antigo que a pessoa mais velha que ja viveu
+                        }
                         return 0;
                     }
                 }
@@ -313,7 +336,7 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
         }
     }
 
-  return 1;// retorna erro caso tenha algum erro na data ou ela nao exista
+    return 1;// retorna erro caso tenha algum erro na data ou ela nao exista
 
 }
 
@@ -322,15 +345,14 @@ int verificacidade(PESSOA habitante) // funcao que verifica se a cidade esta reg
 {
     FILE *cidades_registradas_txt;
     int procura_cidade_registrada = 0, procuraUF_igual = 0;
-    char cidades_registradas[50];
+    char cidades_registradas[CIDADE_MAX];
 
     cidades_registradas_txt = fopen("cidades registradas.txt", "a+b");
 
     if(cidades_registradas_txt)
     {
-        do
+        while(fgets(cidades_registradas, 1500, cidades_registradas_txt))
         {
-            fgets(cidades_registradas, 1500, cidades_registradas_txt);
             if(strstr(cidades_registradas, habitante.cidade)) // buffer para verificar se a cidade esta registrada)
             {
                 procura_cidade_registrada++;                 // contador para verificar quantas vezes a cidade aparece
@@ -339,7 +361,7 @@ int verificacidade(PESSOA habitante) // funcao que verifica se a cidade esta reg
                     procuraUF_igual++;                      // contador para verificar quantas vezes a UF aparece
                 }
             }
-        }while(!feof(cidades_registradas_txt));
+        }
         if((procura_cidade_registrada != 0) && (procuraUF_igual == 1))// se a cidade aparece mais de uma vez e a UF apenas uma vez, a cidade eh valida
         {
             return 0;// caso esteja correto
@@ -364,14 +386,15 @@ int verificacidade(PESSOA habitante) // funcao que verifica se a cidade esta reg
 int verificaUF(PESSOA habitante)    // funcao que verifica se a UF esta registrada
 {
     FILE *uf;   // arquivo pra abrir o txt das UFs
-    char uftxt[100];    // buffer para armazenar o conteudo do txt
+    char uftxt[UF_MAX];    // buffer para armazenar o conteudo do txt, numero 100
     int procurastring = 0;   //string criada pra verificar se a UF digitada esta dentro do .txt das UFs registradas
 
     uf = fopen("UFregistrada.txt", "a+");
 
     if(uf)
     {
-        if(strlen(habitante.UF) == 2){
+        if(strlen(habitante.UF) == 2)
+        {
             do
             {
                 fscanf(uf,"%s",uftxt);
@@ -379,7 +402,8 @@ int verificaUF(PESSOA habitante)    // funcao que verifica se a UF esta registra
                 {
                     procurastring++;// se a UF aparece, o contador eh somado
                 }
-            }while(!feof(uf));
+            }
+            while(!feof(uf));
             if(procurastring != 0)
             {
                 return 0;// caso seja valida
@@ -407,97 +431,124 @@ int verificaUF(PESSOA habitante)    // funcao que verifica se a UF esta registra
 void cadastrapessoa(PESSOA habitante)
 {
     /* funcao que ha de cadastrar a pessoa, primeiro verificando
-    se os seus dados estão corretos, para ai sim registra-la */
+    se os seus dados estão corretos, para ai sim registra-la no banco*/
+
+    int nome = 0, erro = 0;// para contar se o nome eh feito apenas de letras
 
     printf("Digite o nome da pessoa: ");
     fflush(stdin);
     scanf("%[^\n]s", habitante.nome);// lendo o nome
     strupr(habitante.nome);
-    printf("Digite o sexo da pessoa (M ou F): ");
-    fflush(stdin);
-    scanf("%[^\n]s", habitante.sexo);// lendo o sexo
-    strupr(habitante.sexo);// faco varias vezes pelo codigo para facilitar verificacao
-    if(strcmp(habitante.sexo, "M") != 0 && strcmp(habitante.sexo, "F") != 0)// verificando se o sexo eh valido
+    for(int i = 0; i < strlen(habitante.nome); i++)
     {
-        printf("Sexo invalido\n\n");
-        system("pause");
-        system("cls");
+        if((habitante.nome[i] >= 'A'  && habitante.nome[i] <= 'Z') || (isspace(habitante.nome[i])))
+        {
+            nome++;
+        }
+        else
+        {
+            erro++;// se tiver algo alem de letras, nao sera possivel entrar
+        }
     }
-    else
+    if((nome > 1) && (erro == 0))// verificando se o nome nao eh vazio ou se eh formado por letras
     {
-        printf("Digite a data de nascimento da pessoa (DD/MM/AAAA): ");
+        printf("Digite o sexo da pessoa (M ou F): ");
         fflush(stdin);
-        scanf("%[^\n]s", habitante.data);// lendo a data
-        int p = 0;
-        char ano[5];
-        for(int k = 6; k <= 9; k++)
+        scanf("%[^\n]s", habitante.sexo);// lendo o sexo
+        strupr(habitante.sexo);// faco varias vezes pelo codigo para facilitar verificacao
+        if(strcmp(habitante.sexo, "M") != 0 && strcmp(habitante.sexo, "F") != 0)// verificando se o sexo eh valido
         {
-            ano[p] = habitante.data[k];
-            p++;
-        }
-        int anoi = atoi(ano);// convertendo o ano obtido na string acima para int
-        habitante.idade = calculaidade(anoi, habitante);// todo esse processo desde o for eh para conseguir infos para calcular a idade
-        if(verificadata(habitante) == 2)
-        {
-            printf("Essa pessoa eh uma viajante do tempo :O\n\n");
+            printf("Sexo invalido\n\n");
             system("pause");
             system("cls");
         }
-        else if(verificadata(habitante) == 1)
+        else
         {
-            printf("Essa data eh invalida\n\n");
-            system("pause");
-            system("cls");
-        }
-        else if(verificadata(habitante) == 0)
-        {
-            printf("Digite a UF de onde a pessoa foi vacinada: ");
+            printf("Digite a data de nascimento da pessoa (DD/MM/AAAA): ");
             fflush(stdin);
-            scanf("%[^\n]s", habitante.UF);
-            strupr(habitante.UF);
-            if(verificaUF(habitante) == 1)
+            scanf("%[^\n]s", habitante.data);// lendo a data
+            int p = 0;
+            char ano[5];
+            for(int k = 6; k <= 9; k++)
             {
-                printf("Essa UF nao esta registrada ou eh invalida\nVerifique a escrita e tente novamente.\n\n");
+                ano[p] = habitante.data[k];
+                p++;
+            }
+            int anoi = atoi(ano);// convertendo o ano obtido na string acima para int
+            habitante.idade = calculaidade(anoi, habitante);// todo esse processo desde o for eh para conseguir infos para calcular a idade
+            if(verificadata(habitante) == 2)
+            {
+                printf("Essa pessoa eh uma viajante do tempo :O\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificaUF(habitante) == 2)
+            else if(verificadata(habitante) == 1)
             {
-                printf("Nao foi possivel abrir o arquivo :(\n\n");
+                printf("Essa data eh invalida\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificaUF(habitante) == 0)
+            else if(verificadata(habitante) == 0)
             {
-                printf("Digite agora uma cidade registrada nessa UF: ");
+                printf("Digite a UF de onde a pessoa foi vacinada: ");
                 fflush(stdin);
-                scanf("%[^\n]s", habitante.cidade);
-                strupr(habitante.cidade);
-                if(verificacidade(habitante) == 1)
+                scanf("%[^\n]s", habitante.UF);
+                strupr(habitante.UF);
+                if(verificaUF(habitante) == 1)
                 {
-                    printf("Esta cidade esta registrada, porem nao nessa UF.\n\n");
+                    printf("Essa UF nao esta registrada ou eh invalida\nVerifique a escrita e tente novamente.\n\n");
                     system("pause");
                     system("cls");
                 }
-                else if(verificacidade(habitante) == 2)
+                else if(verificaUF(habitante) == 2)
                 {
                     printf("Nao foi possivel abrir o arquivo :(\n\n");
                     system("pause");
                     system("cls");
                 }
-                else if(verificacidade(habitante) == 3)
+                else if(verificaUF(habitante) == 0)
                 {
-                    printf("Esta cidade nao esta registrada.\n\n");
-                    system("pause");
-                    system("cls");
-                }
-                else if(verificacidade(habitante) == 0)
-                {
-                    registrapessoa(habitante);// chama o procedimento que salva no arquivo apos verificacoes
+                    printf("Digite agora uma cidade registrada nessa UF: ");
+                    fflush(stdin);
+                    scanf("%[^\n]s", habitante.cidade);
+                    strupr(habitante.cidade);
+                    if(verificacidade(habitante) == 1)
+                    {
+                        printf("Esta cidade esta registrada, porem nao nessa UF.\n\n");
+                        system("pause");
+                        system("cls");
+                    }
+                    else if(verificacidade(habitante) == 2)
+                    {
+                        printf("Nao foi possivel abrir o arquivo :(\n\n");
+                        system("pause");
+                        system("cls");
+                    }
+                    else if(verificacidade(habitante) == 3)
+                    {
+                        printf("Esta cidade nao esta registrada.\n\n");
+                        system("pause");
+                        system("cls");
+                    }
+                    else if(verificacidade(habitante) == 0)
+                    {
+                        registrapessoa(habitante);// chama o procedimento que salva no arquivo apos verificacoes
+                    }
                 }
             }
         }
-
+    }
+    else if(erro > 0)
+    {
+        printf("\nO nome deve ser formado apenas por letras\n\n");
+        system("pause");
+        system("cls");
+    }
+    else if(nome == 1)
+    {
+        printf("\nDigite pelo menos mais de uma letra para o nome\n\n");
+        system("pause");
+        system("cls");
     }
 
 }
@@ -522,7 +573,8 @@ void registraestado() // procedimento que registra os estados por suas siglas no
         do
         {
             fscanf(estados_registrados_txt, "%[^\n]s", UFs_registradas);// transferindo o texto do txt para uma string
-        }while(!feof(estados_registrados_txt));// realizando a funcao ate o fim do arquivo
+        }
+        while(!feof(estados_registrados_txt)); // realizando a funcao ate o fim do arquivo
         procuraUF_registrada = strstr(UFs_registradas, UFnova); // buffer que verifica se a uf digitada ja esta registrada
         for(int j = 0; j < 3; j++)
         {
@@ -571,7 +623,7 @@ void registracidade() // procedimento que registra as cidades no arquivo
     FILE *cidades_registradas_txt, *UFs_registradas_txt;
     CIDADE cidadenova;
     int contadorcidade = 0, tamanho_cidade, contadorUF = 0, tamanho_UF, procura_cidade_registrada = 0;
-    int procuraUF_registrada = 0;
+    int procuraUF_registrada = 0, erro = 0;
     char UFs_registradas[100], cidades_registradas[500], nome_formatado[550];
 
     cidades_registradas_txt = fopen("cidades registradas.txt", "a+b");  // abrindo o arquivo das cidades já registradas
@@ -589,11 +641,15 @@ void registracidade() // procedimento que registra as cidades no arquivo
     tamanho_cidade = strlen(cidadenova.cidade); // armazenando o tamanho da string para verificar se eh formada apenas por letras
     tamanho_UF = strlen(cidadenova.UF);         // armazenando o tamanho da string para verificar se esta escrita corretamente
 
-    for(int i = 0; i <= tamanho_cidade; i++)
+    for(int i = 0; i < tamanho_cidade; i++)
     {
         if((cidadenova.cidade[i] > 64 && cidadenova.cidade[i] < 91) || (cidadenova.cidade[i] == 32))
         {
             contadorcidade++;// conta quantas letras tem na string
+        }
+        else
+        {
+            erro++;
         }
     }
 
@@ -609,10 +665,9 @@ void registracidade() // procedimento que registra as cidades no arquivo
             contadorUF++;// conta quantas letras tem na string
         }
     }
-
     if(cidades_registradas_txt)
     {
-        if(tamanho_cidade == contadorcidade)  // verifica se a cidade esta escrita corretamente
+        if((contadorcidade > 1) && erro == 0)  // verifica se a cidade esta escrita corretamente
         {
             if(UFs_registradas_txt)
             {
@@ -625,14 +680,14 @@ void registracidade() // procedimento que registra as cidades no arquivo
                         {
                             procuraUF_registrada++;// se a UF esta no txt, o contador aumenta
                         }
-                    }while(!feof(UFs_registradas_txt));
+                    }
+                    while(!feof(UFs_registradas_txt));
                     if(procuraUF_registrada != 0) // verifica se a UF esta registrada
                     {
                         int procuraUF_igual = 0;// contador para saber quantas vezes a UF aparece
                         char nome_cidade[500], nome_UF[4];  // buffers para verificar a cidade e a UF
-                        do
+                        while(fgets(cidades_registradas, 1500, cidades_registradas_txt))
                         {
-                            fgets(cidades_registradas, 1500, cidades_registradas_txt);
                             if(strstr(cidades_registradas, cidadenova.cidade)) // buffer para verificar se a cidade esta incluida na string
                             {
                                 procura_cidade_registrada++;
@@ -644,7 +699,7 @@ void registracidade() // procedimento que registra as cidades no arquivo
                                     }
                                 }
                             }
-                        }while(!feof(cidades_registradas_txt));
+                        }
                         if(procura_cidade_registrada == 0)   // verifica se a cidade ja esta registrada
                         {
                             fseek(cidades_registradas_txt,0,SEEK_END); // colocando o ponteiro no fim do .txt
@@ -655,7 +710,8 @@ void registracidade() // procedimento que registra as cidades no arquivo
                         }
                         else
                         {
-                            if(procuraUF_igual == 0){ // se a cidade tiver sido igual, porem com UF diferente, eh cadastrada
+                            if(procuraUF_igual == 0)  // se a cidade tiver sido igual, porem com UF diferente, eh cadastrada
+                            {
                                 fseek(cidades_registradas_txt,0,SEEK_END); // colocando o ponteiro no fim do .txt
                                 fprintf(cidades_registradas_txt,"%s-%s\n",cidadenova.cidade,cidadenova.UF);
                                 printf("\nCidade armazenada com sucesso :)\n\n");
@@ -691,9 +747,15 @@ void registracidade() // procedimento que registra as cidades no arquivo
                 system("cls");
             }
         }
-        else
+        else if(erro != 0)
         {
             printf("\nA cidade deve conter apenas letras. Verifique a escrita e tente novamente.\n\n");
+            system("pause");
+            system("cls");
+        }
+        else if(contadorcidade <= 1)
+        {
+            printf("\nDigite pelo menos mais de uma letra para cadastrar uma cidade.\n\n");
             system("pause");
             system("cls");
         }
@@ -718,7 +780,7 @@ void registrapessoa(PESSOA habitante) // procedimento que registra as pessoas no
     if(txt_pessoas)
     {
         fseek(txt_pessoas,0,SEEK_END);// colocando o ponteiro no fim do .txt
-        fprintf(txt_pessoas,"\n%s,%s-%s,Idade:%d,Sexo:%s",
+        fprintf(txt_pessoas,"%s,%s-%s,Idade:%d,Sexo:%s \n",
                 habitante.nome, habitante.cidade, habitante.UF, habitante.idade, habitante.sexo);// escrevendo toda a struct no arquivo
         printf("Dados de %s armazenados com sucesso!\n\n", habitante.nome);
         system("pause");
@@ -735,11 +797,14 @@ void registrapessoa(PESSOA habitante) // procedimento que registra as pessoas no
 }
 
 //---------Lista Pessoas por Estado----------------------------------------------------------------------------
-void listaestado()
+void listaestado()// procedimento que lista as pessoas de acordo com suas UFs
 {
     FILE *pessoas_txt, *UFs_registradas_txt;
-    char pesquisa_estado[50];
+    char pesquisa_estado[50];// estado desejado
     int contadorUF = 0;
+    char lixo[PESSOA_MAX];// string grande o suficiente para guardar tudo aquilo que nao eh estado
+    int i = 0;// sera necessario para guardar somente o estado
+    char estado_linha[5];// buffer para guardar o estado da pessoa
 
     pessoas_txt = fopen("pessoas.txt", "a+b");
     UFs_registradas_txt = fopen("UFregistrada.txt", "a+b"); // abrindo os arquivos das pessoas e das UFs
@@ -768,16 +833,34 @@ void listaestado()
                 {
                     procuraUF_registrada++;// verifica se a UF digitada esta cadastrada
                 }
-            }while(!feof(UFs_registradas_txt));
+            }
+            while(!feof(UFs_registradas_txt));
             if(procuraUF_registrada != 0) // verifica se a UF digitada foi encontrada no txt de estados registrados
             {
                 printf("Seguem as pessoas registradas neste estado:\n\n");
-                char pessoas_registradas[100];// buffer pra
+                char pessoas_registradas[PESSOA_MAX];// buffer pra armazenar as linhas de cada pessoa
                 int pessoas = 0;// caso nao tenha nenhuma pessoa, continuara zero
-                while(!feof(pessoas_txt))
+                while(fgets(pessoas_registradas,NOME_MAX,pessoas_txt))
                 {
-                    fgets(pessoas_registradas,NOME_MAX,pessoas_txt);
-                    if(strstr(pessoas_registradas, pesquisa_estado)) // buffer para listar as pessoas pelo estado
+                    i = 0;
+                    do
+                    {
+                        lixo[i] = pessoas_registradas[i];
+                        i++;
+                    }
+                    while(pessoas_registradas[i]!=',');
+                    do
+                    {
+                        lixo[i] = pessoas_registradas[i];
+                        i++;
+                    }
+                    while(pessoas_registradas[i]!='-');
+                    i++;
+                    estado_linha[0] = pessoas_registradas[i];
+                    i++;
+                    estado_linha[1] = pessoas_registradas[i];// guardando apenas o estado na string
+                    i++;
+                    if(strcmp(estado_linha, pesquisa_estado) == 0) // buffer para listar as pessoas pelo estado
                     {
                         printf(pessoas_registradas);
                         printf("\n");
@@ -795,6 +878,12 @@ void listaestado()
                     system("pause");
                     system("cls");
                 }
+            }
+            else
+            {
+                printf("\nEssa UF nao foi registrada.\n\n");
+                system("pause");
+                system("cls");
             }
         }
         else
@@ -819,8 +908,9 @@ void listaestado()
 void listacidade()
 {
     FILE *pessoas_txt, *cidades_registradas_txt;
-    char pesquisa_cidade[50];
+    char pesquisa_cidade[LOCAL_MAX];
     int contadorcidade = 0;
+    int pessoas = 0;// verificar quantas pessoas tem na cidade
 
     pessoas_txt = fopen("pessoas.txt", "a+b");
     cidades_registradas_txt = fopen("cidades registradas.txt", "a+b");
@@ -838,33 +928,41 @@ void listacidade()
                 contadorcidade++;// conta quantas letras tem na string
             }
         }
-        if((contadorcidade == strlen(pesquisa_cidade)) && (contadorcidade != 2))// verifica se a cidade possui apenas letras
+        if((contadorcidade == strlen(pesquisa_cidade)) && (contadorcidade > 2))// verifica se a cidade possui apenas letras
         {
             char cidades_registradas[100];
             int procuracidade_registrada = 0;
-            do
+            while(fgets(cidades_registradas, LOCAL_MAX, cidades_registradas_txt))
             {
-                fgets(cidades_registradas, 50, cidades_registradas_txt);// transferindo o texto do txt para uma string
                 if(strstr(cidades_registradas, pesquisa_cidade))
                 {
                     procuracidade_registrada++;
                 }
-            }while(!feof(cidades_registradas_txt));
+            }
             if(procuracidade_registrada == 1) // verifica se a UF digitada foi encontrada no txt de estados registrados
             {
                 char pessoas_registradas[100];
-                printf("\nSeguem as pessoas desta cidade listada: \n\n");
-                do
+                printf("\nSeguem as pessoas desta cidade: \n\n");
+                while(fgets(pessoas_registradas, PESSOA_MAX, pessoas_txt))// transferindo o txt pra uma string)
                 {
-                    fgets(pessoas_registradas, 1500, pessoas_txt);// transferindo o txt pra uma string
                     if(strstr(pessoas_registradas, pesquisa_cidade))
                     {
                         printf("%s\n", pessoas_registradas);
+                        pessoas++;
                     }
-                }while(!feof(pessoas_txt));
+                }
                 printf("\n\n");
-                system("pause");
-                system("cls");
+                if(pessoas > 0)
+                {
+                    system("pause");
+                    system("cls");
+                }
+                else
+                {
+                    printf("\n\nAinda nao foram cadastradas pessoas nesta cidade\n\n");
+                    system("pause");
+                    system("cls");
+                }
             }
             else if(procuracidade_registrada > 1)
             {
@@ -873,12 +971,13 @@ void listacidade()
                 fseek(cidades_registradas_txt, 0, SEEK_SET);
                 do
                 {
-                fscanf(cidades_registradas_txt,"%s\n", cidades_registradas);// transferindo o texto do txt para uma string
-                if(strstr(cidades_registradas, pesquisa_cidade))
-                {
-                    printf("%s\n", cidades_registradas);
+                    fscanf(cidades_registradas_txt,"%s\n", cidades_registradas);// transferindo o texto do txt para uma string
+                    if(strstr(cidades_registradas, pesquisa_cidade))
+                    {
+                        printf("%s\n", cidades_registradas);
+                    }
                 }
-                }while(!feof(cidades_registradas_txt));
+                while(!feof(cidades_registradas_txt));
                 fflush(stdin);
                 scanf("%[^\n]s", UF_desejada);
                 strupr(UF_desejada);
@@ -895,15 +994,15 @@ void listacidade()
                     char pessoas_registradas[100];
                     int contadorpessoas = 0;
                     printf("\nSeguem as pessoas registradas nessa localizacao:\n\n");
-                    do
+                    while(fgets(pessoas_registradas, 1500, pessoas_txt))
                     {
-                        fgets(pessoas_registradas, 1500, pessoas_txt);
+
                         if((strstr(pessoas_registradas, UF_desejada)) && (strstr(pessoas_registradas,pesquisa_cidade)))
                         {
                             printf("%s\n", pessoas_registradas);
                             contadorpessoas++;
                         }
-                    }while(!feof(pessoas_txt));
+                    }
                     if(contadorpessoas == 0)
                     {
                         printf("Nao existem pessoas cadastradas nessa localizacao");
@@ -955,7 +1054,7 @@ void listacidade()
 void consultapessoa()
 {
     FILE *pessoas_txt;
-    char pessoa_desejada[NOME_MAX], lista_pessoas[1500], infopessoa[1500], nome_pessoa[NOME_MAX];
+    char pessoa_desejada[NOME_MAX], lista_pessoas[PESSOA_MAX], infopessoa[PESSOA_MAX], nome_pessoa[NOME_MAX];
     int contador = 0, i = 1, numero, k = 0, j = 0;
 
     pessoas_txt = fopen("pessoas.txt", "a+b");
@@ -966,20 +1065,21 @@ void consultapessoa()
         fflush(stdin);
         scanf("%[^\n]s", pessoa_desejada);
         strupr(pessoa_desejada);
-        do
+        while(fgets(lista_pessoas,NOME_MAX,pessoas_txt))
         {
-            fgets(lista_pessoas,NOME_MAX,pessoas_txt);
             j = 0;
-            do{
+            do
+            {
                 nome_pessoa[j] = lista_pessoas[j];
                 j++;
-            }while(lista_pessoas[j]!=',');
+            }
+            while(lista_pessoas[j]!=',');
             if(strstr(nome_pessoa, pessoa_desejada))
             {
                 contador++; // contador para ver quantas vezes o nome aparece
                 strcpy(infopessoa, lista_pessoas); // copio para outra string para depois apresentar o nome se so entrar uma vez nessa condicao
             }
-        }while(!feof(pessoas_txt));
+        }
         if(contador == 0)// caso nao entre nenhuma vez na condicao
         {
             printf("\nNao foi possivel encontrar esta pessoa\nVerifique a escrita e tente novamente.\n\n");
@@ -990,34 +1090,37 @@ void consultapessoa()
         {
             printf("Foram encontradas mais de uma pessoa:\n\n");
             fseek(pessoas_txt, 0, SEEK_SET);
-            do
+            while(fgets(lista_pessoas,PESSOA_MAX,pessoas_txt))
             {
-                fgets(lista_pessoas,1500,pessoas_txt);
                 if(strstr(lista_pessoas, pessoa_desejada))
                 {
                     k = 0;
                     printf("%d-", i);
-                    do{
-                    printf("%c", lista_pessoas[k]);
-                    k++;
-                    }while(lista_pessoas[k]!=',');
+                    do
+                    {
+                        printf("%c", lista_pessoas[k]);
+                        k++;
+                    }
+                    while(lista_pessoas[k]!=',');
                     printf("\n");
                     i++;
                 }
-            }while(!feof(pessoas_txt));
-            do{
-            printf("\nDigite o numero da pessoa que deseja obter os dados: ");
-            fflush(stdin);
-            scanf("%d", &numero);
-            }while(numero < 1 || numero > i-1);
-            fseek(pessoas_txt, 0, SEEK_SET);
-            i = 1;
+            }
             do
             {
-                fgets(lista_pessoas,NOME_MAX,pessoas_txt);
+                printf("\nDigite o numero da pessoa que deseja obter os dados: ");
+                fflush(stdin);
+                scanf("%d", &numero);
+            }
+            while(numero < 1 || numero > i-1);
+            fseek(pessoas_txt, 0, SEEK_SET);
+            i = 1;
+            while(fgets(lista_pessoas,NOME_MAX,pessoas_txt))
+            {
                 if(strstr(lista_pessoas, pessoa_desejada))
                 {
-                    if(i == numero){
+                    if(i == numero)
+                    {
                         printf("Seguem os dados da pessoa desejada: \n\n");
                         printf("%s\n\n", lista_pessoas);
                         system("pause");
@@ -1025,7 +1128,7 @@ void consultapessoa()
                     }
                     i++;
                 }
-            }while(!feof(pessoas_txt));
+            }
         }
         else if(contador == 1)// caso entre apenas uma vez, sera essa pessoa
         {
