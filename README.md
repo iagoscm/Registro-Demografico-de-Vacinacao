@@ -1,4 +1,5 @@
 Meu trabalho final da matéria Algoritmos e Programação de Computadores
+
 Termo de Referência:
 
 O Ministério da Saúde deseja fazer deseja fazer um programa para cadastrar dados de pessoas que receberam
@@ -42,6 +43,7 @@ identificados como cópias não serão considerados como entregues.
 O relatório demográfico (item 8 do menu de opções) deverá mostrar as seguintes informações:
 
   Percentual de pessoas em cada faixa etária
+
     0 a 15 anos
     16 a 29 anos
     30 a 49 anos
@@ -49,5 +51,6 @@ O relatório demográfico (item 8 do menu de opções) deverá mostrar as seguin
     acima de 60 anos
     
   Percentual de pessoas por sexo
+
     Masculino
     Feminino
