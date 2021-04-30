@@ -453,15 +453,32 @@ int verificaUF(PESSOA habitante)    // funcao que verifica se a UF esta registra
 int verificacidade(PESSOA habitante)
 {
     FILE *cidades_registradas_txt;
-    int procura_cidade_registrada = 0, certo = 0;
+    int procura_cidade_registrada = 0, certo = 0, letras = 0;
     char cidades_registradas[CIDADE_MAX];
     char cidade_formatada[CIDADE_MAX];
     char cidadetemp[CIDADE_MAX];
 
     cidades_registradas_txt = fopen("cidades registradas.txt", "rb");
 
-    if(strlen(habitante.cidade)<=2)
+    int tamanho = strlen(habitante.cidade);
+
+    if(tamanho<=2)
     {
+        fclose(cidades_registradas_txt);
+        return 4;
+    }
+
+    for(int i = 0; i <= tamanho; i++)
+    {
+        if((habitante.cidade[i] >= 'A' && habitante.cidade[i] <= 'Z') || isspace(habitante.cidade[i]))
+        {
+            letras++;
+        }
+    }
+
+    if(letras != tamanho)
+    {
+        fclose(cidades_registradas_txt);
         return 4;
     }
 
@@ -473,25 +490,29 @@ int verificacidade(PESSOA habitante)
             {
                 procura_cidade_registrada++;                 // contador para verificar quantas vezes a cidade aparece
             }
-            if(strcmp(cidade_formatada, cidades_registradas) == 0)
+            if(strcmp(habitante.cidade, cidades_registradas) == 0)
             {
                 certo++;
             }
         }
-        if(certo == 1)// se a cidade aparece mais de uma vez e a UF apenas uma vez, a cidade eh valida
+        if(certo == 1)// se a cidade aparece exatamente uma vez, volta
         {
-            return 0;// caso esteja correto
+            fclose(cidades_registradas_txt);
+            return 0;
         }
         else if(procura_cidade_registrada > 0)// se a cidade aparece mais de uma vez mas a UF nao, a cidade eh invalida
         {
+            fclose(cidades_registradas_txt);
             return 0;// caso a cidade nao esteja cadastrada na UF
         }
         else if((procura_cidade_registrada == 0))// se a cidade nao aparece nenhuma vez nem a UF, a cidade eh invalida
         {
+            fclose(cidades_registradas_txt);
             return 3;// caso a cidade nao esteja cadastrada
         }
         else
         {
+            fclose(cidades_registradas_txt);
             return 3;// algum outro erro
         }
     }
@@ -607,7 +628,7 @@ void cadastrapessoa(PESSOA habitante)
                     {
                         do
                         {
-                            printf("\nVoce realmente deseja cadastrar os dados de %s?(S/N)", habitante.nome);
+                            printf("\nVoce realmente deseja cadastrar os dados de %s?(S/N): ", habitante.nome);
                             fflush(stdin);
                             scanf("%[^\n]s", opcao);
                             strupr(opcao);
@@ -710,7 +731,7 @@ void registraestado() // procedimento que registra os estados por suas siglas no
             {
                 do
                 {
-                    printf("Tem certeza que deseja registrar essa cidade?(S/N): ");
+                    printf("Tem certeza que deseja registrar essa UF?(S/N): ");
                     fflush(stdin);
                     scanf("%[^\n]s", opcao);
                     strupr(opcao);
@@ -725,7 +746,7 @@ void registraestado() // procedimento que registra os estados por suas siglas no
                 }
                 else if(strcmp(opcao, "N") == 0)
                 {
-                    printf("\nA cidade nao foi registrada.\n\n");
+                    printf("\nA UF nao foi registrada.\n\n");
                     system("pause");
                     system("cls");
                 }
@@ -804,7 +825,7 @@ void registracidade() // procedimento que registra as cidades no arquivo
 
     for(int i = 0; i < tamanho_cidade; i++)
     {
-        if((cidadenova.cidade[i] > 64 && cidadenova.cidade[i] < 91) || (cidadenova.cidade[i] == 32))
+        if((cidadenova.cidade[i] > 64 && cidadenova.cidade[i] < 91) || isspace(cidadenova.cidade[i]))
         {
             contadorcidade++;// conta quantas letras tem na string
         }
@@ -1096,6 +1117,7 @@ void listacidade(PESSOA habitante)// procedimento que lista as pessoas de acordo
     int contadorpessoas = 0;
     char lixo[PESSOA_MAX];
     char cidadeprocurada[CIDADE_MAX];
+    int verificador = 0;
 
     pessoas_txt = fopen("pessoas.txt", "rb");
     cidades_registradas_txt = fopen("cidades registradas.txt", "rb");
@@ -1108,7 +1130,8 @@ void listacidade(PESSOA habitante)// procedimento que lista as pessoas de acordo
             fflush(stdin);
             scanf("%[^\n]s", habitante.cidade);
             strupr(habitante.cidade);
-            if(verificacidade(habitante) == 0)// verifica se a cidade possui apenas letras e esta cadastrada
+            verificador = verificacidade(habitante);
+            if(verificador == 0)// verifica se a cidade possui apenas letras e esta cadastrada
             {
                 while(fgets(cidades_registradas, LOCAL_MAX, cidades_registradas_txt))
                 {
@@ -1239,23 +1262,24 @@ void listacidade(PESSOA habitante)// procedimento que lista as pessoas de acordo
                     system("cls");
                 }
             }
-            else if(verificacidade(habitante) == 1)
+            else if(verificador == 1)
             {
                 printf("\nEssa cidade eh invalida ou nao esta cadastrada nessa UF\n");
                 printf("Verifique a escrita e tente novamente.\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificacidade(habitante) == 3)
+            else if(verificador == 3)
             {
                 printf("\nEssa cidade nao esta cadastrada\n");
                 printf("Verifique a escrita e tente novamente\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificacidade(habitante) == 4)
+            else if(verificador == 4)
             {
-                printf("\nPor favor, digite ao menos 3 letras para que possa ser feita a verificacao.\n\n");
+                printf("\nPor favor, digite apenas letras para que possa ser feita a verificacao.\n");
+                printf("Lembre-se: as cidades possuem no minimo 3 letras.\n\n");
                 system("pause");
                 system("cls");
             }
@@ -1631,7 +1655,11 @@ void confirmaexclusao()// procedimento que exclui a pessoa desejada
         }
     }
     else
-        printf("ERRO");
+    {
+        printf("\n\nERRO\n\n\n");
+        system("pause");
+        system("cls");
+    }
 
     fclose(original);
     fclose(alterado);
