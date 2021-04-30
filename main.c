@@ -45,7 +45,6 @@ int verificaUF(PESSOA habitante);
 char menu();
 void telainicial();
 int calculaidade(PESSOA habitante);
-PESSOA dividepessoa(PESSOA habitante);
 
 int main()
 {
@@ -115,36 +114,72 @@ int main()
 int calculaidade(PESSOA habitante) // funcao que calcula a idade do habitante a partir do ano
 {
 
-    int i;
+    int i = 0;
     int idade = 0;
-    int p = 0;
-    char ano[5];
-    for(int k = 6; k <= 9; k++)
-    {
-        ano[p] = habitante.data[k];
-        p++;
-    }
-    int anoi = atoi(ano);// convertendo o ano obtido na string acima para int
+    int p = 0, j = 0, k = 0, l = 0;
+    char anoc[5], mesc[3], datac[10];
+    int anoin, mesin;
 
-    if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0) &&
-            (habitante.data[0] == '2') && (habitante.data[1] == '9')) // calcula a idade de um individuo caso
+
+    for(i = 0; i < 10; i++)
     {
-        //tenha nascido dia 29 de fevereiro
-        for(i = anoi; i < 2021; i++)
+        datac[i] = habitante.data[i];// transferindo a data inserida para uma string auxiliar
+    }
+
+    for(k = 3; k <= 9; k++)
+    {
+        if(k == 3 || k == 4)
         {
-            if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0))
+            mesc[p] = datac[k];
+            p++;
+        }
+        if(k >= 6 && k <= 9)
+        {
+            anoc[j] = datac[k];// isolando a string do ano para calculos especificos
+            j++;
+        }
+    }
+
+    anoin = atoi(anoc);// convertendo o ano obtido na string acima para int
+    mesin = atoi(mesc);
+    i = anoin;
+
+    printf("%d\n%d\n", mesin, anoin);
+    printf(habitante.data);
+
+    for(l = anoin; l <= 2021; l++)
+    {
+        if((anoin%400 == 0 || anoin%100 != 0) && (anoin%4 == 0) && (habitante.data[0] == '2') &&
+           (habitante.data[1] == '9') && (habitante.data[3] == '0') && (habitante.data[4] == '2')) // calcula a idade de um individuo caso
+        {
+            if(i < 2021 && i != anoin)
             {
+                idade++;
+                i += 4;
+            }
+            else
+                i++;
+        }
+        else
+        {
+            if(i < 2021 && i != anoin)
+            {
+                idade++;
+                i++;
+            }
+            else
+            {
+                i++;
+            }
+            if(mesin <= 5 && i == 2021)
+            {
+                printf("sim");
                 idade++;
             }
         }
     }
-    else
-    {
-        idade = 2021 * 365 - anoi * 365;
-        idade /= 365;
-    }
 
-    return idade;// retornando a idade para a funçao de cadastro
+    return idade;
 }
 
 //---------Verifica Nome---------------------------------------------------------------------------------------
@@ -190,6 +225,8 @@ int verificanome(PESSOA habitante)
     {
         return 3;
     }
+    else
+        return 1;
 }
 
 //---------Verifica Data---------------------------------------------------------------------------------------
@@ -215,14 +252,12 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
 
     p = 0;
     anoi = atoi(ano);
-
     // a partir daqui são verificacoes para saber se a data eh valida
 
     if(strlen(data) < 10)
     {
         return 1;
     }
-
     else
     {
         if((data[3] == '0' && data[4] == '1') || (data[3] == '0' && data[4] == '3') ||
@@ -284,7 +319,8 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
             {
                 if(data[2] == '/' && data[5] == '/')
                 {
-                    if((anoi%100 != 0) && (anoi%4 == 0) && (anoi%400 == 0))
+                    printf("barr");
+                    if((anoi%400 == 0 || anoi%100 != 0) && (anoi%4 == 0))
                     {
                         if(anoi > 2021 || anoi < 1890)
                         {
@@ -300,7 +336,6 @@ int verificadata(PESSOA habitante) // funcao para verificar se a data da pessoa 
             return 1;
         }
     }
-
     return 1;// retorna erro caso tenha algum erro na data ou ela nao exista
 
 }
@@ -472,6 +507,8 @@ void cadastrapessoa(PESSOA habitante)
 {
     /* funcao que ha de cadastrar a pessoa, primeiro verificando
     se os seus dados estão corretos, para ai sim registra-la no banco*/
+    int verificador = 0;
+    char opcao[2];
 
     system("cls");
 
@@ -479,7 +516,8 @@ void cadastrapessoa(PESSOA habitante)
     fflush(stdin);
     scanf("%[^\n]s", habitante.nome);// lendo o nome
     strupr(habitante.nome);// faco varias vezes pelo codigo para facilitar verificacao
-    if(verificanome(habitante) == 0)// verificando se o nome nao eh vazio ou se eh formado por letras
+    verificador = verificanome(habitante);
+    if(verificador == 0)// verificando se o nome nao eh vazio ou se eh formado por letras
     {
         printf("Digite o sexo da pessoa (M ou F): ");
         fflush(stdin);
@@ -496,93 +534,112 @@ void cadastrapessoa(PESSOA habitante)
             printf("Digite a data de nascimento da pessoa (DD/MM/AAAA): ");
             fflush(stdin);
             scanf("%[^\n]s", habitante.data);// lendo a data
-            habitante.idade = calculaidade(habitante);// calculando a idade
-            if(verificadata(habitante) == 2)/*  se o ano eh depois de 2021 ou muito antigo
+            verificador = verificadata(habitante);
+            if(verificador == 2)/*  se o ano eh depois de 2021 ou muito antigo
                                                 (mais antigo do que a pessoa mais velha que ja viveu) */
             {
                 printf("\nEssa pessoa eh uma viajante do tempo :O\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificadata(habitante) == 1)// se a data foi digitada incorretamente ou nao existe
+            else if(verificador == 1)// se a data foi digitada incorretamente ou nao existe
             {
                 printf("\nEssa data eh invalida\n\n");
                 system("pause");
                 system("cls");
             }
-            else if(verificadata(habitante) == 0)
+            else if(verificador == 0)
             {
+                habitante.idade = calculaidade(habitante);// calculando a idade
                 printf("Digite a UF de onde a pessoa foi vacinada: ");
                 fflush(stdin);
                 scanf("%[^\n]s", habitante.UF);
                 strupr(habitante.UF);
-                if(verificaUF(habitante) == 1)// se a uf digitada for invalida (tamanho > 2 ou < 2) ou nao for registrada
+                verificador = verificaUF(habitante);
+                if(verificador == 1)// se a uf digitada for invalida (tamanho > 2 ou < 2) ou nao for registrada
                 {
                     printf("\nEssa UF nao esta registrada ou eh invalida\nVerifique a escrita e tente novamente.\n\n");
                     system("pause");
                     system("cls");
                 }
-                else if(verificaUF(habitante) == 2)
+                else if(verificador == 2)
                 {
                     printf("\nNao foi possivel abrir o arquivo :(\n");
                     printf("Voce ja cadastrou alguma UF?\n\n");
                     system("pause");
                     system("cls");
                 }
-                else if(verificaUF(habitante) == 0)
+                else if(verificador == 0)
                 {
                     printf("Digite agora uma cidade registrada nessa UF: ");
                     fflush(stdin);
                     scanf("%[^\n]s", habitante.cidade);
                     strupr(habitante.cidade);
-                    if(verificacidade_UF(habitante) == 1)
+                    verificador = verificacidade_UF(habitante);
+                    if(verificador == 1)
                     {
                         printf("\nEsta cidade pode estar registrada, porem nao nessa UF.\n");
                         printf("Verifique a escrita e tente novamente.\n\n");
                         system("pause");
                         system("cls");
                     }
-                    else if(verificacidade_UF(habitante) == 2)
+                    else if(verificador == 2)
                     {
                         printf("Nao foi possivel abrir o arquivo :(\n");
                         printf("Voce ja cadastrou alguma cidade?\n\n");
                         system("pause");
                         system("cls");
                     }
-                    else if(verificacidade_UF(habitante) == 3)
+                    else if(verificador == 3)
                     {
                         printf("\nEsta cidade nao esta registrada ou eh invalida.\n");
                         printf("Verifique a escrita e tente novamente.\n\n");
                         system("pause");
                         system("cls");
                     }
-                    else if(verificacidade_UF(habitante) == 4)
+                    else if(verificador == 4)
                     {
                         printf("\nPor favor, digite algo para que possa ser feita a verificacao.\n\n");
                         system("pause");
                         system("cls");
                     }
-                    else if(verificacidade_UF(habitante) == 0)
+                    else if(verificador == 0)
                     {
+                        do
+                        {
+                            printf("\nVoce realmente deseja cadastrar os dados de %s?(S/N)", habitante.nome);
+                            fflush(stdin);
+                            scanf("%[^\n]s", opcao);
+                            strupr(opcao);
+                        }while(strcmp(opcao, "N") != 0 && strcmp(opcao, "S") != 0);
+                        if(strcmp(opcao, "S") == 0)
+                        {
                         registrapessoa(habitante);// chama o procedimento que salva no arquivo apos verificacoes
+                        }
+                        else if(strcmp(opcao, "N") == 0)
+                        {
+                            printf("\n%s nao foi cadastrado(a).\n\n", habitante.nome);
+                            system("pause");
+                            system("cls");
+                        }
                     }
                 }
             }
         }
     }
-    else if(verificanome(habitante) == 1)
+    else if(verificador == 1)
     {
         printf("\nO nome deve ser formado apenas por letras\n\n");
         system("pause");
         system("cls");
     }
-    else if(verificanome(habitante) == 2)
+    else if(verificador == 2)
     {
         printf("\nDigite pelo menos mais de uma letra para o nome\n\n");
         system("pause");
         system("cls");
     }
-    else if(verificanome(habitante) == 3)
+    else if(verificador == 3)
     {
         printf("\nPor favor nao digite espaco(s) antes do nome\n\n");
         system("pause");
@@ -1268,7 +1325,7 @@ void consultapessoa()// procedimento que mostra informacoes de uma pessoa em par
                 dados_pessoa[0] = '\0';
                 strcpy(dados_pessoa, lista_pessoas);
                 nome_pessoa = "\0";
-                nome_pessoa = strtok(lista_pessoas, ",");;
+                nome_pessoa = strtok(lista_pessoas, "-");;
                 if(strstr(nome_pessoa, pessoa_desejada))
                 {
                     printf("%d-", i);// listando as pessoas de maneira ordenada para futura escolha
