@@ -47,8 +47,7 @@ int main()
     // Chamando a tela inicial
     telainicial();
 
-    do
-    {
+    do{
         // Laco para a repeticao do menu
         opcoes = menu();
         fflush(stdin);
@@ -90,8 +89,7 @@ int main()
             system("pause");
             system("cls");
         }
-    }
-    while(opcoes!=9);
+    }while(opcoes!=9);
 
     printf("\nAte mais!\n");
 
