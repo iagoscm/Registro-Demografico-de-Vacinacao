@@ -36,7 +36,7 @@ int verificadata(PESSOA habitante);
 int verificacidade_UF(PESSOA habitante, int funcao);
 int verificacidade(PESSOA habitante);
 int verificaUF(PESSOA habitante);
-char menu();
+int menu();
 void telainicial();
 
 int main()
@@ -129,7 +129,7 @@ int verificanome(PESSOA habitante) // Funcao que verifica se o nome digitado eh 
     {
         return 0;
     }
-    else if(erro > 0 && espinicio == 0)// Caso tenha algum caracter diferente de letras
+    else if(erro > 0)// Caso tenha algum caracter diferente de letras
     {
         return 1;
     }
@@ -189,24 +189,24 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
     else
     {
         if((habitante.data[3] == '0' && habitante.data[4] == '1') || (habitante.data[3] == '0' && habitante.data[4] == '3') ||
-                (habitante.data[3] == '0' && habitante.data[4] == '5') || (habitante.data[3] == '0' && habitante.data[4] == '7') ||
-                (habitante.data[3] == '0' && habitante.data[4] == '8') || (habitante.data[3] == '1' && habitante.data[4] == '0') ||
-                (habitante.data[3] == '1' && habitante.data[4] == '2'))
+           (habitante.data[3] == '0' && habitante.data[4] == '5') || (habitante.data[3] == '0' && habitante.data[4] == '7') ||
+           (habitante.data[3] == '0' && habitante.data[4] == '8') || (habitante.data[3] == '1' && habitante.data[4] == '0') ||
+           (habitante.data[3] == '1' && habitante.data[4] == '2'))
         {
             if((habitante.data[0] == '0' && habitante.data[1] > '1' && habitante.data[1] <= '9') || (habitante.data[0] == '1' &&
-                    habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
-                            habitante.data[1] <= '9') || (habitante.data[0] == '3' && habitante.data[1] >= '0' && habitante.data[1] <= '1'))
+                                                                                                     habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
+                                                                                                                                                               habitante.data[1] <= '9') || (habitante.data[0] == '3' && habitante.data[1] >= '0' && habitante.data[1] <= '1'))
             {
                 verificador++;
             }
         }
 
         if((habitante.data[3] == '0' && habitante.data[4] == '4') || (habitante.data[3] == '0' && habitante.data[4] == '6') ||
-                (habitante.data[3] == '0' && habitante.data[4] == '9') || (habitante.data[3] == '1' && habitante.data[4] == '1'))
+           (habitante.data[3] == '0' && habitante.data[4] == '9') || (habitante.data[3] == '1' && habitante.data[4] == '1'))
         {
             if((habitante.data[0] == '0' && habitante.data[1] > '1' && habitante.data[1] <= '9') || (habitante.data[0] == '1' &&
-                    habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
-                            habitante.data[1] <= '9') || (habitante.data[0] == '3' && habitante.data[1] == '0'))
+                                                                                                     habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
+                                                                                                                                                               habitante.data[1] <= '9') || (habitante.data[0] == '3' && habitante.data[1] == '0'))
             {
                 verificador++;
             }
@@ -215,14 +215,14 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
         if(habitante.data[3] == '0' && habitante.data[4] == '2')
         {
             if((habitante.data[0] == '0' && habitante.data[1] > '1' && habitante.data[1] <= '9') || (habitante.data[0] == '1' &&
-                    habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
-                            habitante.data[1] <= '8'))
+                                                                                                     habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
+                                                                                                                                                               habitante.data[1] <= '8'))
             {
                 verificador++;
             }
             else if((habitante.data[0] == '0' && habitante.data[1] > '1' && habitante.data[1] <= '9') || (habitante.data[0] == '1' &&
-                    habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
-                            habitante.data[1] <= '9'))
+                                                                                                          habitante.data[1] >= '0' && habitante.data[1] <= '9') || (habitante.data[0] == '2' && habitante.data[1] >= '0' &&
+                                                                                                                                                                    habitante.data[1] <= '9'))
             {
                 verificador++;
             }
@@ -297,7 +297,7 @@ int verificacidade_UF(PESSOA habitante, int funcao)
     strcpy(habitante.cidade, cidadetemp);
     strcat(cidade_formatada, "\n");
 
-    for(int i = 0; i < strlen(habitante.cidade); i++)
+    for(i = 0; i < strlen(habitante.cidade); i++)
     {
         if((habitante.cidade[i] >= 'A'  && habitante.cidade[i] <= 'Z'))// Verifica se na posicao eh letra
         {
@@ -482,7 +482,7 @@ int verificacidade(PESSOA habitante)// Verifica se a cidade existe para a funcao
     strupr(habitante.cidade);
     int tamanho = strlen(habitante.cidade);
 
-    for(int i = 0; i < tamanho; i++)
+    for(i = 0; i < tamanho; i++)
     {
         if((habitante.cidade[i] >= 'A' && habitante.cidade[i] <= 'Z') || isspace(habitante.cidade[i]))
         {
@@ -528,7 +528,7 @@ int verificacidade(PESSOA habitante)// Verifica se a cidade existe para a funcao
         {
             return 1;
         }
-        else if((procura_cidade_registrada == 0))// Se a cidade nao aparece nenhuma vez, a cidade eh invalida
+        else if(procura_cidade_registrada == 0)// Se a cidade nao aparece nenhuma vez, a cidade eh invalida
         {
             fclose(cidades_registradas_txt);
             return 3;// Caso a cidade nao esteja cadastrada
@@ -600,7 +600,7 @@ void cadastrapessoa(PESSOA habitante)
                     }while(strcmp(opcao, "N") != 0 && strcmp(opcao, "S") != 0);
                     if(strcmp(opcao, "S") == 0)// Caso haja confirmacao do cadastro
                     {
-                    registrapessoa(habitante);// Chama o procedimento que salva no arquivo apos verificacoes
+                        registrapessoa(habitante);// Chama o procedimento que salva no arquivo apos verificacoes
                     }
                     else if(strcmp(opcao, "N") == 0)
                     {
@@ -689,51 +689,51 @@ void registraestado(PESSOA habitante) // Procedimento que registra os estados po
             }
         }while(!feof(estados_registrados_txt));
     }
-        if(contador == 0)// Caso nenhuma UF tenha sido registrada
+    if(contador == 0)// Caso nenhuma UF tenha sido registrada
+    {
+        printf("Ainda nao foram cadastradas UFs.\n");
+    }
+    printf("\n");
+    system("pause");
+    // Processo de registro
+    printf("\nDigite a UF que deseja registrar: ");
+    fflush(stdin);
+    scanf("%[^\n]s", habitante.UF);   // Armazenando a UF a ser cadastrada
+    strupr(habitante.UF);
+    verificador = verificaUF(habitante);
+    if(verificador == 1)// Caso siga as regras para registro de UF e nao exista ainda
+    {
+        // Verificando a certeza do registro e cadastrando caso "S"
+        do
         {
-            printf("Ainda nao foram cadastradas UFs.\n");
-        }
-        printf("\n");
-        system("pause");
-        // Processo de registro
-        printf("\nDigite a UF que deseja registrar: ");
-        fflush(stdin);
-        scanf("%[^\n]s", habitante.UF);   // Armazenando a UF a ser cadastrada
-        strupr(habitante.UF);
-        verificador = verificaUF(habitante);
-        if(verificador == 1)// Caso siga as regras para registro de UF e nao exista ainda
+            printf("Tem certeza que deseja registrar essa UF?(S/N): ");
+            fflush(stdin);
+            scanf("%[^\n]s", opcao);
+            strupr(opcao);
+        }while(strcmp(opcao, "N") != 0 && strcmp(opcao, "S") != 0);
+        if(strcmp(opcao, "S") == 0)
         {
-            // Verificando a certeza do registro e cadastrando caso "S"
-            do
-            {
-                printf("Tem certeza que deseja registrar essa UF?(S/N): ");
-                fflush(stdin);
-                scanf("%[^\n]s", opcao);
-                strupr(opcao);
-            }while(strcmp(opcao, "N") != 0 && strcmp(opcao, "S") != 0);
-            if(strcmp(opcao, "S") == 0)
-            {
-                fseek(estados_registrados_txt,0,SEEK_END);          // Colocando o ponteiro no fim do .txt
-                fprintf(estados_registrados_txt,"%s ",habitante.UF);// Escrevendo a UF inserida no arquivo
-                printf("\nUF armazenada com sucesso :D\n\n");
-            }
-            else if(strcmp(opcao, "N") == 0)
-            {
-                printf("\nA UF nao foi registrada.\n\n");
-            }
+            fseek(estados_registrados_txt,0,SEEK_END);          // Colocando o ponteiro no fim do .txt
+            fprintf(estados_registrados_txt,"%s ",habitante.UF);// Escrevendo a UF inserida no arquivo
+            printf("\nUF armazenada com sucesso :D\n\n");
         }
-        else if(verificador == 0)
+        else if(strcmp(opcao, "N") == 0)
         {
-            printf("\nEssa UF ja esta registrada.\n\n");
+            printf("\nA UF nao foi registrada.\n\n");
         }
-        else if(verificador == 2)
-        {
-            printf("\nNao foi possivel abrir o arquivo de UFs.\n\n");
-        }
-        else if(verificador == 3)
-        {
-            printf("\nUF invalida\nLembre-se: a UF eh formada por duas letras.\n\n");
-        }
+    }
+    else if(verificador == 0)
+    {
+        printf("\nEssa UF ja esta registrada.\n\n");
+    }
+    else if(verificador == 2)
+    {
+        printf("\nNao foi possivel abrir o arquivo de UFs.\n\n");
+    }
+    else if(verificador == 3)
+    {
+        printf("\nUF invalida\nLembre-se: a UF eh formada por duas letras.\n\n");
+    }
 
     system("pause");
     system("cls");
@@ -762,7 +762,7 @@ void registracidade(PESSOA habitante) // Procedimento que registra as cidades no
         while(fgets(cidades_registradas, 1500, cidades_registradas_txt))
         {
             printf("- ");
-            printf(cidades_registradas);
+            printf("%s", cidades_registradas);
             contadorcidade++;
         }
         if(contadorcidade == 0)
@@ -906,7 +906,7 @@ void listaestado(PESSOA habitante)// Procedimento que lista as pessoas de acordo
                                 {
                                     if(strcmp(token2, habitante.UF) == 0) // buffer para listar as pessoas pelo estado
                                     {
-                                        printf(dados_pessoa);
+                                        printf("%s", dados_pessoa);
                                         printf("---------------------------------------------------------------------------\n");
                                         pessoas++;// conto caso alguem esteja cadastrado na UF, caso contrario, dou um aviso
                                     }
@@ -1185,7 +1185,7 @@ void consultapessoa()// Procedimento que mostra informacoes de uma pessoa em par
                     k++;
                     if(strstr(token, pessoa_desejada) && k == 1)// Verifico se o nome da pessoa eh igual ao digitado
                     {
-                        printf(dados_pessoa);// Printo todas as pessoas pois podem existir pessoas diferentes com nomes iguais
+                        printf("%s", dados_pessoa);// Printo todas as pessoas pois podem existir pessoas diferentes com nomes iguais
                         printf("---------------------------------------------------------------------------\n");
                     }
                     token = strtok(NULL, ",");
@@ -1249,9 +1249,9 @@ void excluipessoa()// Procedimento que confirma ou nao a exclusao
             fseek(original, 0, SEEK_SET);
             while(fgets(lista_pessoas,PESSOA_MAX,original))
             {
-                    printf("- ");
-                    printf(lista_pessoas);
-                    contador++;
+                printf("- ");
+                printf("%s",lista_pessoas);
+                contador++;
             }
             if(contador == 0)
             {
@@ -1347,7 +1347,7 @@ void confirmaexclusao()// Procedimento que exclui a pessoa desejada
                             if(strstr(nome_pessoa, pessoa_desejada))
                             {
                                 printf("%d-", i);// Listando as pessoas de maneira ordenada para futura escolha
-                                printf(dados_pessoa);
+                                printf("%s",dados_pessoa);
                                 i++;
                             }
                         }
@@ -1608,7 +1608,7 @@ void relatoriofinal()// Procedimento para mostrar o relatorio das pessoas
 }
 
 //---------Menu------------------------------------------------------------------------------------------------
-char menu() // Funcao que retorna o menu para a funcao principal
+int menu() // Funcao que retorna o menu para a funcao principal
 {
 
     int i;
