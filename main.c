@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #define NOME_MAX 1000
 #define CIDADE_MAX 50
 #define PESSOA_MAX 1100 // Tamanho maximo de uma estrutura PESSOA
@@ -47,7 +48,8 @@ int main()
     // Chamando a tela inicial
     telainicial();
 
-    do{
+    do
+    {
         // Laco para a repeticao do menu
         opcoes = menu();
         fflush(stdin);
@@ -89,7 +91,8 @@ int main()
             system("pause");
             system("cls");
         }
-    }while(opcoes!=9);
+    }
+    while(opcoes!=9);
 
     printf("\nAte mais!\n");
 
@@ -147,8 +150,17 @@ int verificanome(PESSOA habitante) // Funcao que verifica se o nome digitado eh 
 int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa cadastrada eh verdadeira
 {                                  // e calcular sua idade
 
-    int anoin, mesin, verificador = 0, i = 0, erro = 0, l = 0, idade = -1;
-    char anoc[5], mesc[3], *token, datatemp[11];
+    int anoin, mesin, diain, verificador = 0, i = 0, erro = 0, l = 0, idade = -1;
+    int dia_atual, mes_atual, ano_atual;
+    char anoc[5], mesc[3], diac[3], *token, datatemp[11];
+    struct tm *data_atual;// Armazenar data
+    time_t segundos;// Armazenar o tempo em segundos
+
+    time(&segundos);// Obtendo o tempo em segundos
+    data_atual = localtime(&segundos);  // Convertendo para o tempo local
+    dia_atual = data_atual->tm_mday;    // Armazenando o dia do mes
+    mes_atual = data_atual->tm_mon+1;   // Armazenando o mes
+    ano_atual = data_atual->tm_year+1900;// Armazenando o ano
 
     strcpy(datatemp, habitante.data);
     token = strtok(habitante.data, "/");// Dividindo a data em tokens para atribuicoes
@@ -156,6 +168,10 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
     // Armazenando o mes e o ano
     while(token != NULL)
     {
+        if(i == 0)
+        {
+            strcpy(diac, token);
+        }
         if(i == 1)
         {
             strcpy(mesc, token);
@@ -170,9 +186,9 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
     strcpy(habitante.data, datatemp);
 
     // Convertendo para int
+    diain = atoi(diac);
     anoin = atoi(anoc);
     mesin = atoi(mesc);
-    i = anoin;
 
     if(habitante.data[2] == '/' && habitante.data[5] == '/')
     {
@@ -228,18 +244,19 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
 
     }
 
-    // Calculando a idade usando 05/2021 como referencia
-    if(anoin > 1870 && anoin <= 2021)
+    // Calculando a idade
+    i = anoin;// Para calculo do ano bissexto
+    if(anoin > 1870 && anoin <= ano_atual)
     {
         idade = 0;
-        for(l = anoin; l <= 2021; l++)
+        for(l = anoin; l <= ano_atual; l++)
         {
             if((anoin%400 == 0 || anoin%100 != 0) && (anoin%4 == 0) && (habitante.data[0] == '2') &&
                (habitante.data[1] == '9') && (habitante.data[3] == '0') && (habitante.data[4] == '2'))
             {
-                if(i < 2021 && i != anoin)// Calcula a idade se o ano for bissexto
+                if(i < ano_atual && i != anoin)// Calcula a idade se o ano for bissexto e o dia for 29/02
                 {
-                    idade++;
+                    idade++;// Soma de quatro em quatro anos
                     i += 4;
                 }
                 else
@@ -247,18 +264,23 @@ int verificadata(PESSOA habitante) // Funcao para verificar se a data da pessoa 
             }
             else
             {
-                if(i < 2021 && i != anoin)
+                if(l < ano_atual && l != anoin)// Calculo idade normalmente ate ano atual
                 {
                     idade++;
-                    i++;
                 }
-                else
+                if(l == ano_atual)
                 {
-                    i++;
-                }
-                if(mesin <= 5 && i == 2021)
-                {
-                    idade++;
+                    if(mes_atual > mesin)// Calculo se o mes ja tiver passado
+                    {
+                        idade++;
+                    }
+                    else if(mes_atual == mesin)// Se for o mes atual, verifico se ja passou o dia
+                    {
+                        if(dia_atual >= diain)// Se for o dia atual ou ja passou, calculo idade
+                        {
+                            idade++;
+                        }
+                    }
                 }
             }
         }
