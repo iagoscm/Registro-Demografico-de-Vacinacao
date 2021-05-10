@@ -1441,6 +1441,7 @@ void confirmaexclusao()// Procedimento que exclui a pessoa desejada
                 fseek(original, 0, SEEK_SET);
                 while(fgets(lista_pessoas,PESSOA_MAX,original))
                 {
+                    k = 0;//Para pegar apenas o nome na divisao de tokens
                     strcpy(dados_pessoa, lista_pessoas);
                     nome_pessoa = strtok(lista_pessoas, ",");
                     while(nome_pessoa)
