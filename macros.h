@@ -1,7 +1,7 @@
 #ifndef _MACROS_H
 #define _MACROS_H
 
-#define NOME_MAX 1000
+#define NOME_MAX 1100
 #define CIDADE_MAX 50
 #define PESSOA_MAX 1100 // Tamanho maximo de uma estrutura PESSOA
 #define DATA_MAX 11
