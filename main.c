@@ -3,17 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "macros.h"
 
-typedef struct // Struct que armazena as informações de uma pessoa
-{
-    char nome[NOME_MAX];
-    char sexo[2];
-    char data[DATA_MAX];
-    char cidade[CIDADE_MAX];
-    char UF[3];
-    int idade;
-} PESSOA;
+#include "pessoa.h"
+#include "main.h"
 
 // Declaracoes das funcoes auxiliares
 void cadastrapessoa(PESSOA habitante);
@@ -26,7 +18,7 @@ void consultapessoa();
 void excluipessoa();
 void confirmaexclusao();
 void relatoriofinal();
-int verificanome(PESSOA habitante);
+//int verificanome(PESSOA habitante);
 int verificadata(PESSOA habitante);
 int verificacidade_UF(PESSOA habitante, int funcao);
 int verificacidade(PESSOA habitante);
@@ -91,53 +83,6 @@ int main()
     printf("\nAte mais!\n");
 
     return 0;
-}
-
-//---------Verifica Nome---------------------------------------------------------------------------------------
-int verificanome(PESSOA habitante) // Funcao que verifica se o nome digitado eh valido
-{
-    int nome = 0, erro = 0, espinicio = 0, esp = 0;// Para verificacoes de validacao do nome
-
-    for(int i = 0; i < strlen(habitante.nome); i++)
-    {
-        if((habitante.nome[i] >= 'A'  && habitante.nome[i] <= 'Z'))// Verifica se na posicao eh letra
-        {
-            nome++;
-            esp = 0; // Zera o espaco para que nao deixe tambem terminar com espacos
-        }
-        else
-        {
-            erro++;     // Se tiver algo alem de letras, nao sera possivel entrar
-        }
-        if(i == 0 && habitante.nome[i] == ' ')
-        {
-            espinicio++;// Se o nome comecar com espacos, nao permite cadastro
-        }
-        if(espinicio == 0 && (isspace(habitante.nome[i])))
-        {
-            esp++;      // Nao permite espaco adicional ao fim e/ou ao inicio do nome se > 0
-            erro--;
-        }
-    }
-
-    if((nome > 1) && (erro == 0) && (espinicio == 0) && (esp == 0))// Verificando se o nome nao eh vazio ou se eh formado por letras
-    {
-        return 0;
-    }
-    else if(erro > 0)// Caso tenha algum caracter diferente de letras
-    {
-        return 1;
-    }
-    else if(nome == 1)// Caso so tenha uma letra
-    {
-        return 2;
-    }
-    else if(espinicio > 0)// Caso comece com espacos
-    {
-        return 3;
-    }
-    else
-        return 1;// Caso de algum erro diferente
 }
 
 //---------Verifica Data---------------------------------------------------------------------------------------
